@@ -1,9 +1,6 @@
 header {
     font: 14px "Trebuchet MS", "Lucida Sans";
     text-shadow: 0 1px 0 rgba(255,255,255,.5);
-}
-
-header {
     background-color: #444;
     position: fixed;
     z-index: 9999;
@@ -19,6 +16,10 @@ header h1 {
     top: 10px;
     margin-top: 0;
     color: white;
+}
+
+header h1:hover {
+    cursor: pointer;
 }
 
 header .headerButtonsList {

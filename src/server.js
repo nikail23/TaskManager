@@ -71,10 +71,55 @@ app.get('/tasks', function (request, response) {
     if (typeof(id) === "number") {
         tasksModel.selectTask(id);
     }
-    ejs.renderFile('./templates/index.ejs', 
+    ejs.renderFile('./templates/main.ejs', 
         {
             tasks: tasksModel.getTasks(),
             selectedTask: tasksModel.getSelectedTask()
+        },  
+        {},
+        function (error, template) { 
+            if (error) { 
+                throw error; 
+            } else { 
+                response.send(template); 
+            } 
+        }); 
+}); 
+
+app.get('/add', function (request, response) {
+    ejs.renderFile('./templates/add.ejs', 
+        {
+            tasks: tasksModel.getTasks(),
+        },  
+        {},
+        function (error, template) { 
+            if (error) { 
+                throw error; 
+            } else { 
+                response.send(template); 
+            } 
+        }); 
+}); 
+
+app.get('/delete', function (request, response) {
+    ejs.renderFile('./templates/delete.ejs', 
+        {
+            tasks: tasksModel.getTasks(),
+        },  
+        {},
+        function (error, template) { 
+            if (error) { 
+                throw error; 
+            } else { 
+                response.send(template); 
+            } 
+        }); 
+}); 
+
+app.get('/edit', function (request, response) {
+    ejs.renderFile('./templates/edit.ejs', 
+        {
+            tasks: tasksModel.getTasks(),
         },  
         {},
         function (error, template) { 
