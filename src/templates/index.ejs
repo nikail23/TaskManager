@@ -1,0 +1,60 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="header.css">
+</head> 
+<%- include('header.ejs') %>
+<body>  
+    <ol class="taskList">
+        <h1>Список задач</h1>
+        <% tasks.forEach(function(task){ %>
+            <% 
+                let type = null;
+                switch(task.type) {
+                    case 0:
+                        type = "task notStarted";
+                    break;
+                    case 1:
+                        type = "task inProcess";
+                    break;
+                    case 2:
+                        type = "task finished";
+                    break;
+                } 
+            %>
+            <li class="<%=`${type}` %>"> <%= task.name %> </li>
+        <% }); %>
+    </ol>
+    <%  if (selectedTask) { 
+            let status = null;
+            switch (selectedTask.type) {
+                case 0: 
+                    status = "Не начато."
+                break;
+                case 1: 
+                    status = "Выполняется."
+                break;
+                case 2: 
+                    status = "Закончено."
+                break;
+            }
+    %>
+    <div class="grayBg">
+        <div class="taskDescription">
+            <h1 class="taskDescriptionName">Задание: <%= selectedTask.name %></h1>
+            <div class="taskDescriptionText">
+                <br/> <i>Описание:</i> 
+                <%= selectedTask.description %> 
+                <br/> <i>Статус:</i> 
+                <%= status %> 
+                <br/> <i>Должно быть выполнено к:</i>
+                <%= selectedTask.date.toLocaleString() %> 
+            </div>
+        </div>
+        <% } %>
+    </div>
+</body> 
+</html> 

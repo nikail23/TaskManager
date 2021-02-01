@@ -1,8 +1,8 @@
 {
   "name": "taskmanager",
   "version": "1.0.0",
-  "description": "&lt;h1>ПС \"Менеджер задач\". >&lt;/h1>",
-  "main": "app.js",
+  "description": "ПС \"Менеджер задач\".",
+  "main": "server.js",
   "dependencies": {
     "ejs": "^3.1.5",
     "express": "^4.17.1"
