@@ -31,7 +31,7 @@ class TasksModel {
     _selectedTask = this._tasks[0];
 
     selectTask(index) {
-        if (typeof(index) === "number" && this._tasks[index]) {
+        if (this._tasks[index]) {
             this._selectedTask = this._tasks[index];
         }
     }
@@ -57,31 +57,38 @@ class TasksModel {
     }
 }
 
-const tasksModel = new TasksModel();
+let tasksModel = new TasksModel();
 
 const express = require('express'); 
 const app = express(); 
 const ejs = require('ejs'); 
-let fs = require('fs'); 
 const port = 8000; 
 
-app.use(express.static('styles'));
+app.use(express.static('./styles'));
   
-app.get('/', function (request, response) { 
+app.get('/tasks', function (request, response) {
+    let id = Number(request.query.id);
+    if (typeof(id) === "number") {
+        tasksModel.selectTask(id);
+    }
     ejs.renderFile('./templates/index.ejs', 
-    {
-        tasks: tasksModel.getTasks(),
-        selectedTask: tasksModel.getSelectedTask()
-    },  
-    {},
-    function (err, template) { 
-        if (err) { 
-            throw err; 
-        } else { 
-            response.end(template); 
-        } 
-    }); 
+        {
+            tasks: tasksModel.getTasks(),
+            selectedTask: tasksModel.getSelectedTask()
+        },  
+        {},
+        function (error, template) { 
+            if (error) { 
+                throw error; 
+            } else { 
+                response.send(template); 
+            } 
+        }); 
 }); 
+
+app.use("/",function (request, response) {
+    response.redirect("/tasks")
+  });
   
 app.listen(port, function (error) { 
     if (error) 

@@ -3,15 +3,16 @@
 <head> 
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="stylesheet" type="text/css" href="header.css">
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="/header.css">
 </head> 
 <%- include('header.ejs') %>
 <body>  
     <ol class="taskList">
         <h1>Список задач</h1>
-        <% tasks.forEach(function(task){ %>
-            <% 
+        <% 
+            let i = 0;
+            tasks.forEach(function(task){ 
                 let type = null;
                 switch(task.type) {
                     case 0:
@@ -24,9 +25,13 @@
                         type = "task finished";
                     break;
                 } 
+                let urlGet = `?id=${i}`;
             %>
-            <li class="<%=`${type}` %>"> <%= task.name %> </li>
-        <% }); %>
+            <li class="<%=`${type}` %>" onclick=<%= `document.location.href=\"${urlGet}\"` %>> <%= task.name %> </li>
+        <%
+            i++;
+            }); 
+        %>
     </ol>
     <%  if (selectedTask) { 
             let status = null;
