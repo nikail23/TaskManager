@@ -33,6 +33,7 @@
                 }); 
             %>
         </ol>
+        <div class="grayBg">
         <%  if (selectedTask) { 
                 let status = null;
                 switch (selectedTask.type) {
@@ -47,7 +48,6 @@
                     break;
                 }
         %>
-        <div class="grayBg">
             <div class="taskDescription">
                 <h1 class="taskDescriptionName">Задание: <%= selectedTask.name %></h1>
                 <div class="taskDescriptionText">

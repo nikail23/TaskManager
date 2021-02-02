@@ -21,6 +21,8 @@ body {
 }
 
 .form_button {
+    width: 200px;
+    margin-left: 65px;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;

@@ -32,6 +32,12 @@ class TasksModel {
 
     _editedIndex = -1;
 
+    _deletedIndex = -1;
+
+    getTasks() {
+        return this._tasks;
+    }
+
     selectTask(index) {
         if (this._tasks[index]) {
             this._selectedTaskIndex = index;
@@ -48,18 +54,20 @@ class TasksModel {
         }
     }
 
-    deleteTask(index) {
-        if (typeof(index) === "number") {
-            this._tasks = this._tasks.splice(index, 1);
-        }
-    }
-
-    markCurrentTaskAsEdit() {
+    markCurrentTaskAsEdited() {
         this._editedIndex = this._selectedTaskIndex;
     }
 
     getEditTaskIndex() {
         return this._editedIndex;
+    }
+
+    markCurrentTaskAsDelited() {
+        this._deletedIndex = this._selectedTaskIndex;
+    }
+
+    getDeletedTaskIndex() {
+        return this._deletedIndex;
     }
 
     editTask(editedTask) {
@@ -69,8 +77,14 @@ class TasksModel {
         }
     }
 
-    getTasks() {
-        return this._tasks;
+    deleteTask() {
+        if (this._deletedIndex !== -1) {
+            this._tasks.splice(this._deletedIndex, 1);
+            if (this._deletedIndex === this._selectedTaskIndex) {
+                this._selectedTaskIndex = -1;
+            }
+            this._deletedIndex = -1;
+        }
     }
 }
 
@@ -121,9 +135,10 @@ app.get('/add', function (request, response) {
 }); 
 
 app.get('/delete', function (request, response) {
+    tasksModel.markCurrentTaskAsDelited();
     ejs.renderFile('./templates/delete.ejs', 
     {
-        tasks: tasksModel.getTasks(),
+        selectedTask: tasksModel.getSelectedTask(),
     },  
     {},
     function (error, template) { 
@@ -136,7 +151,7 @@ app.get('/delete', function (request, response) {
 }); 
 
 app.get('/edit', function (request, response) {
-    tasksModel.markCurrentTaskAsEdit();
+    tasksModel.markCurrentTaskAsEdited();
     ejs.renderFile('./templates/edit.ejs', 
         {
             selectedTask: tasksModel.getSelectedTask()
@@ -197,10 +212,6 @@ app.post('/edit', urlencodedParser, function (request, response) {
         type = 2;
     }
 
-    const editedTaskIndex = tasksModel.getEditTaskIndex();
-    console.log(editedTaskIndex);
-    console.log(tasksModel.getTasks());
-
     tasksModel.editTask(
         new Task(
             request.body.name, 
@@ -210,7 +221,16 @@ app.post('/edit', urlencodedParser, function (request, response) {
         )
     );
 
-    console.log(tasksModel.getTasks());
+    response.redirect(303, "/tasks");
+})
+
+app.post('/delete', urlencodedParser, function (request, response) {
+    if (!request.body) {
+        console.log("bad request");
+        return response.sendStatus(400);
+    }
+
+    tasksModel.deleteTask();
 
     response.redirect(303, "/tasks");
 })

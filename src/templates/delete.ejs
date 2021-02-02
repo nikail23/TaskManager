@@ -9,6 +9,11 @@
     </head> 
     <%- include('header.ejs') %>
     <body>  
-        
+        <% if (selectedTask) { %>
+        <form class="form" action="/delete" method="POST">
+            <h1 class="form_title">Удаление задания: <%= selectedTask.name %></h1>
+            <button type="submit" class="form_button">Удалить</button>
+        </form>
+        <% } %>
     </body>
 </html>
