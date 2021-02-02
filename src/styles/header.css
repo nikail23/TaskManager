@@ -1,0 +1,56 @@
+header {
+    font: 14px "Trebuchet MS", "Lucida Sans";
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+    background-color: #444;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+}
+
+header h1 {
+    position: fixed;
+    left: 25px;
+    top: 10px;
+    margin-top: 0;
+    color: white;
+}
+
+header h1:hover {
+    cursor: pointer;
+}
+
+header .headerButtonsList {
+    display: block;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+
+header .headerButtonsList button{
+    width: 150px;
+    display: inline-block;
+    font-weight: 700;
+    text-decoration: none;
+    user-select: none;
+    padding: .5em 2em;
+    outline: none;
+    border: 2px solid;
+    border-radius: 1px;
+    transition: 0.2s;
+}
+
+header .headerButtonsList button:hover{
+    cursor: pointer;
+    background: #444;
+}
+
+header .headerButtonsList button:focus{
+    outline: 0;    
+}
+
+header .headerButtonsList button:active { 
+    background: white; 
+}

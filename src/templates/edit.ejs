@@ -1,0 +1,65 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+    <head> 
+        <meta charset="UTF-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <link rel="stylesheet" type="text/css" href="/style.css">
+        <link rel="stylesheet" type="text/css" href="/header.css">
+        <link rel="stylesheet" type="text/css" href="/edit.css">
+    </head> 
+    <%- include('header.ejs') %>
+    <body>  
+        <% if (selectedTask) { %>
+        <form class="form" action="/edit" method="POST">
+            <h1 class="form_title">Редактирование задания: <%= selectedTask.name %></h1>
+            <div class="form_grup">
+                <input class="form_input" name="name" placeholder="Название" value="<%= selectedTask.name %>" required>
+            </div>
+            <div class="form_grup">
+                <input class="form_input" name="description" placeholder="Описание" value="<%= selectedTask.description %>" required>
+            </div>
+            <div class="form_grup">
+                <select name="status">
+                    Статус
+                    <option value="notStarted" <% if (selectedTask.type === 0) { %> selected <% } %> >Не начато</option>
+                    <option value="inProgress" <% if (selectedTask.type === 1) { %> selected <% } %> >В процессе</option>
+                    <option value="finished" <% if (selectedTask.type === 2) { %> selected <% } %> >Завершено</option>
+                </select>
+            </div>
+            <div class="form_grup">
+                <%     
+                    const date = selectedTask.date;
+                    const year = `${date.getFullYear()}`;
+                    let month;
+                    if (date.getMonth() + 1 < 10) {
+                        month = `0${date.getMonth() + 1}`;
+                    } else {
+                        month = `${date.getMonth() + 1}`;
+                    }
+                    let day;
+                    if (date.getDate() + 1 < 10) {
+                        day = `0${date.getDate() + 1}`;
+                    } else {
+                        day = `${date.getDate() + 1}`;
+                    }
+                    let hours;
+                    if (date.getHours() < 10) {
+                        hours = `0${date.getHours()}`;
+                    } else {
+                        hours = `${date.getHours()}`;
+                    }
+                    let minutes;
+                    if (date.getMinutes() < 10) {
+                        minutes = `0${date.getMinutes()}`;
+                    } else {
+                        minutes = `${date.getMinutes()}`;
+                    }
+                    let timeFormatString = `${year}-${month}-${day}T${hours}:${minutes}`;
+                %>
+                <input class="form_input" type="datetime-local" name="datetime" placeholder="Срок выполнения" value="<%= timeFormatString %>" required>
+            </div>
+            <button type="submit" class="form_button">Добавить</button>
+        </form>
+        <% } %>
+    </body>
+</html>

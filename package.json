@@ -1,0 +1,27 @@
+{
+  "name": "taskmanager",
+  "version": "1.0.0",
+  "description": "ПС \"Менеджер задач\".",
+  "main": "server.js",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "ejs-lint": "^1.1.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "lint:ejs": "ejslint src/templates/main.ejs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikail23/TaskManager.git"
+  },
+  "author": "Ilya Yermolovich",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nikail23/TaskManager/issues"
+  },
+  "homepage": "https://github.com/nikail23/TaskManager#readme"
+}
