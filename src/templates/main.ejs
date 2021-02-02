@@ -34,7 +34,7 @@
             %>
         </ol>
         <div class="grayBg">
-        <%  if (selectedTask) { 
+        <%  if (selectedTask && (selectedId > -1)) { 
                 let status = null;
                 switch (selectedTask.type) {
                     case 0: 
@@ -57,9 +57,24 @@
                     <%= status %> 
                     <br/> <i>Должно быть выполнено к:</i>
                     <%= selectedTask.date.toLocaleString() %> 
+                    <br/> <i>Файл:</i>
+                    <% 
+                        if (selectedTask.fileInfo.name && selectedTask.fileInfo.path) { 
+                            let downloadRequest = `?id=${selectedId}&download=true`;
+                            downloadRequest = `document.location.href = "${downloadRequest}"`;
+                    %>
+                        <%= selectedTask.fileInfo.name %>
+                        <br/><br/>
+                        <button type="button" class="button" onclick="<%= downloadRequest %>" >Скачать</button>
+                    <% } 
+                       else 
+                       { 
+                    %>
+                    <%= "Файл не прикреплен" %>
+                    <% } %>
                 </div>
             </div>
             <% } %>
         </div>
     </body> 
-</html> 
+</html>

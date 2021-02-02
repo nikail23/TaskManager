@@ -5,10 +5,13 @@
   "main": "server.js",
   "dependencies": {
     "ejs": "^3.1.5",
-    "express": "^4.17.1"
+    "ejs-lint": "^1.1.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1"
   },
   "devDependencies": {},
   "scripts": {
+    "lint:ejs": "ejslint src/templates/main.ejs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

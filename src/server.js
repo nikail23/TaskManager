@@ -1,3 +1,10 @@
+class FileInfo {
+    constructor (name, path) {
+        this.name = name;
+        this.path = path;
+    }
+}
+
 class Task {
     constructor(name, type, description, date) {
         this.name = name;
@@ -9,6 +16,7 @@ class Task {
          */
         this.description = description;
         this.date = date;
+        this.fileInfo = new FileInfo();
     }
 }
 
@@ -28,10 +36,8 @@ class TasksModel {
         )
     ];
     
-    _selectedTaskIndex = 0;
-
+    _selectedTaskIndex = -1;
     _editedIndex = -1;
-
     _deletedIndex = -1;
 
     getTasks() {
@@ -46,6 +52,10 @@ class TasksModel {
 
     getSelectedTask() {
         return this._tasks[this._selectedTaskIndex];
+    }
+
+    getSelectedTaskIndex() {
+        return this._selectedTaskIndex;
     }
 
     addTask(task) {
@@ -79,6 +89,7 @@ class TasksModel {
 
     deleteTask() {
         if (this._deletedIndex !== -1) {
+            fs.unlinkSync(this._tasks[this._deletedIndex].fileInfo.path);
             this._tasks.splice(this._deletedIndex, 1);
             if (this._deletedIndex === this._selectedTaskIndex) {
                 this._selectedTaskIndex = -1;
@@ -90,26 +101,43 @@ class TasksModel {
 
 let tasksModel = new TasksModel();
 
+const path = require('path');
+const mime = require('mime');
+const fs = require('fs');
+const fileUpload = require('express-fileupload');
 const express = require('express'); 
 const app = express(); 
 const ejs = require('ejs'); 
 const port = 8000; 
 const bodyParser = require('body-parser')
-const urlencodedParser = bodyParser.urlencoded({
-    extended: false,
-})
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 app.use(express.static('./styles'));
+app.use(fileUpload());
   
 app.get('/tasks', function (request, response) {
     let id = Number(request.query.id);
-    if (typeof(id) === "number") {
+    let isFileDownload = Boolean(request.query.download);
+    if (id > -1) {
         tasksModel.selectTask(id);
+        if (isFileDownload) {
+            const fileInfo = tasksModel.getSelectedTask().fileInfo;
+
+            let filename = path.basename(fileInfo.path);
+            let mimetype = mime.lookup(fileInfo.path);
+
+            response.setHeader('Content-disposition', 'attachment; filename=' + filename);
+            response.setHeader('Content-type', mimetype);
+
+            var filestream = fs.createReadStream(fileInfo.path);
+            filestream.pipe(response);
+        }
     }
     ejs.renderFile('./templates/main.ejs', 
         {
             tasks: tasksModel.getTasks(),
-            selectedTask: tasksModel.getSelectedTask()
+            selectedTask: tasksModel.getSelectedTask(),
+            selectedId: tasksModel.getSelectedTaskIndex()
         },  
         {},
         function (error, template) { 
@@ -183,14 +211,32 @@ app.post('/add', urlencodedParser, function (request, response) {
         type = 2;
     }
 
-    tasksModel.addTask(
-        new Task(
-            request.body.name, 
-            type, 
-            request.body.description, 
-            new Date(request.body.datetime)
-        )
-    );
+    const task = new Task(
+        request.body.name, 
+        type, 
+        request.body.description, 
+        new Date(request.body.datetime)
+    )
+
+    if (request.files.file) {
+        let fileInfo = new FileInfo();
+        let file;
+        let uploadPath;
+
+        file = request.files.file;
+        uploadPath = './files/' + file.name;
+        fileInfo.name = file.name
+        fileInfo.path = uploadPath;
+        file.mv(uploadPath, function(err) {
+            if (err) {
+                return res.status(500).send(err);
+            } else {
+                task.fileInfo = fileInfo;
+            }
+        });
+    }
+
+    tasksModel.addTask(task);
 
     response.redirect(303, "/tasks");
 });
