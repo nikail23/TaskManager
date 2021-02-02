@@ -28,16 +28,18 @@ class TasksModel {
         )
     ];
     
-    _selectedTask = this._tasks[0];
+    _selectedTaskIndex = 0;
+
+    _editedIndex = -1;
 
     selectTask(index) {
         if (this._tasks[index]) {
-            this._selectedTask = this._tasks[index];
+            this._selectedTaskIndex = index;
         }
     }
 
     getSelectedTask() {
-        return this._selectedTask;
+        return this._tasks[this._selectedTaskIndex];
     }
 
     addTask(task) {
@@ -49,6 +51,21 @@ class TasksModel {
     deleteTask(index) {
         if (typeof(index) === "number") {
             this._tasks = this._tasks.splice(index, 1);
+        }
+    }
+
+    markCurrentTaskAsEdit() {
+        this._editedIndex = this._selectedTaskIndex;
+    }
+
+    getEditTaskIndex() {
+        return this._editedIndex;
+    }
+
+    editTask(editedTask) {
+        if (this._editedIndex !== -1) {
+            this._tasks[this._editedIndex] = editedTask;
+            this._editedIndex = -1
         }
     }
 
@@ -103,7 +120,38 @@ app.get('/add', function (request, response) {
         }); 
 }); 
 
-app.post('/tasks', urlencodedParser, function (request, response) {
+app.get('/delete', function (request, response) {
+    ejs.renderFile('./templates/delete.ejs', 
+    {
+        tasks: tasksModel.getTasks(),
+    },  
+    {},
+    function (error, template) { 
+            if (error) { 
+                throw error; 
+            } else { 
+                response.send(template); 
+            } 
+    }); 
+}); 
+
+app.get('/edit', function (request, response) {
+    tasksModel.markCurrentTaskAsEdit();
+    ejs.renderFile('./templates/edit.ejs', 
+        {
+            selectedTask: tasksModel.getSelectedTask()
+        },  
+        {},
+        function (error, template) { 
+            if (error) { 
+                throw error; 
+            } else { 
+                response.send(template); 
+            } 
+        }); 
+}); 
+
+app.post('/add', urlencodedParser, function (request, response) {
     if (!request.body) {
         console.log("bad request");
         return response.sendStatus(400);
@@ -129,55 +177,47 @@ app.post('/tasks', urlencodedParser, function (request, response) {
         )
     );
 
-    ejs.renderFile('./templates/main.ejs', 
-        {
-            tasks: tasksModel.getTasks(),
-            selectedTask: tasksModel.getSelectedTask()
-        },  
-        {},
-        function (error, template) { 
-            if (error) { 
-                throw error; 
-            } else { 
-                response.status(200).send(template); 
-                response.end();
-            } 
-        }); 
-  })
+    response.redirect(303, "/tasks");
+});
 
-app.get('/delete', function (request, response) {
-    ejs.renderFile('./templates/delete.ejs', 
-        {
-            tasks: tasksModel.getTasks(),
-        },  
-        {},
-        function (error, template) { 
-            if (error) { 
-                throw error; 
-            } else { 
-                response.send(template); 
-            } 
-        }); 
-}); 
+app.post('/edit', urlencodedParser, function (request, response) {
+    if (!request.body) {
+        console.log("bad request");
+        return response.sendStatus(400);
+    }
 
-app.get('/edit', function (request, response) {
-    ejs.renderFile('./templates/edit.ejs', 
-        {
-            tasks: tasksModel.getTasks(),
-        },  
-        {},
-        function (error, template) { 
-            if (error) { 
-                throw error; 
-            } else { 
-                response.send(template); 
-            } 
-        }); 
-}); 
+    let type;
+    if (request.body.status === "notStarted") {
+        type = 0;
+    }  
+    if (request.body.status === "inProgress") {
+        type = 1;
+    }  
+    if (request.body.status === "finished") {
+        type = 2;
+    }
+
+    const editedTaskIndex = tasksModel.getEditTaskIndex();
+    console.log(editedTaskIndex);
+    console.log(tasksModel.getTasks());
+
+    tasksModel.editTask(
+        new Task(
+            request.body.name, 
+            type, 
+            request.body.description, 
+            new Date(request.body.datetime)
+        )
+    );
+
+    console.log(tasksModel.getTasks());
+
+    response.redirect(303, "/tasks");
+})
 
 app.use("/",function (request, response) {
     response.redirect("/tasks")
-  });
+});
   
 app.listen(port, function (error) { 
     if (error) 

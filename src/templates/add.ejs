@@ -9,7 +9,7 @@
     </head> 
     <%- include('header.ejs') %>
     <body> 
-        <form class="form" action="/tasks" method="POST">
+        <form class="form" action="/add" method="POST">
             <h1 class="form_title">Создание задания</h1>
             <div class="form_grup">
                 <input class="form_input" name="name" placeholder="Название" required>
@@ -29,6 +29,6 @@
                 <input class="form_input" type="datetime-local" name="datetime" placeholder="Срок выполнения" required>
             </div>
             <button type="submit" class="form_button">Добавить</button>
-           </form>
+        </form>
     </body>
 </html>
