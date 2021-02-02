@@ -63,6 +63,10 @@ const express = require('express');
 const app = express(); 
 const ejs = require('ejs'); 
 const port = 8000; 
+const bodyParser = require('body-parser')
+const urlencodedParser = bodyParser.urlencoded({
+    extended: false,
+})
 
 app.use(express.static('./styles'));
   
@@ -88,9 +92,7 @@ app.get('/tasks', function (request, response) {
 
 app.get('/add', function (request, response) {
     ejs.renderFile('./templates/add.ejs', 
-        {
-            tasks: tasksModel.getTasks(),
-        },  
+        {},  
         {},
         function (error, template) { 
             if (error) { 
@@ -100,6 +102,48 @@ app.get('/add', function (request, response) {
             } 
         }); 
 }); 
+
+app.post('/tasks', urlencodedParser, function (request, response) {
+    if (!request.body) {
+        console.log("bad request");
+        return response.sendStatus(400);
+    }
+
+    let type;
+    if (request.body.status === "notStarted") {
+        type = 0;
+    }  
+    if (request.body.status === "inProgress") {
+        type = 1;
+    }  
+    if (request.body.status === "finished") {
+        type = 2;
+    }
+
+    tasksModel.addTask(
+        new Task(
+            request.body.name, 
+            type, 
+            request.body.description, 
+            new Date(request.body.datetime)
+        )
+    );
+
+    ejs.renderFile('./templates/main.ejs', 
+        {
+            tasks: tasksModel.getTasks(),
+            selectedTask: tasksModel.getSelectedTask()
+        },  
+        {},
+        function (error, template) { 
+            if (error) { 
+                throw error; 
+            } else { 
+                response.status(200).send(template); 
+                response.end();
+            } 
+        }); 
+  })
 
 app.get('/delete', function (request, response) {
     ejs.renderFile('./templates/delete.ejs', 
