@@ -42,8 +42,18 @@
                     } else {
                         day = `${date.getDate() + 1}`;
                     }
-                    const hours = `${date.getHours()}`;
-                    const minutes = `${date.getMinutes()}`;
+                    let hours;
+                    if (date.getHours() < 10) {
+                        hours = `0${date.getHours()}`;
+                    } else {
+                        hours = `${date.getHours()}`;
+                    }
+                    let minutes;
+                    if (date.getMinutes() < 10) {
+                        minutes = `0${date.getMinutes()}`;
+                    } else {
+                        minutes = `${date.getMinutes()}`;
+                    }
                     let timeFormatString = `${year}-${month}-${day}T${hours}:${minutes}`;
                 %>
                 <input class="form_input" type="datetime-local" name="datetime" placeholder="Срок выполнения" value="<%= timeFormatString %>" required>

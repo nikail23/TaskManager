@@ -82,14 +82,20 @@ class TasksModel {
 
     editTask(editedTask) {
         if (this._editedIndex !== -1) {
-            this._tasks[this._editedIndex] = editedTask;
+            this._tasks[this._editedIndex].name = editedTask.name;
+            this._tasks[this._editedIndex].description = editedTask.description;
+            this._tasks[this._editedIndex].type = editedTask.type;
+            this._tasks[this._editedIndex].date = editedTask.date;
             this._editedIndex = -1
         }
     }
 
     deleteTask() {
         if (this._deletedIndex !== -1) {
-            fs.unlinkSync(this._tasks[this._deletedIndex].fileInfo.path);
+            if (this._tasks[this._deletedIndex].fileInfo.path) {
+                console.log(this._tasks[this._deletedIndex].fileInfo.path);
+                fs.unlinkSync(this._tasks[this._deletedIndex].fileInfo.path);
+            } 
             this._tasks.splice(this._deletedIndex, 1);
             if (this._deletedIndex === this._selectedTaskIndex) {
                 this._selectedTaskIndex = -1;
